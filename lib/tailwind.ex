@@ -216,29 +216,32 @@ defmodule Tailwind do
     url = "https://github.com/tailwindlabs/tailwindcss/releases/download/v#{version}/#{name}"
     bin_path = bin_path()
     binary = fetch_body!(url)
+    tailwind_config_path = Path.expand("assets/tailwind.config.js")
     File.mkdir_p!(Path.dirname(bin_path))
     File.write!(bin_path, binary, [:binary])
     File.chmod(bin_path, 0o755)
 
     File.mkdir_p!("assets")
 
-    File.write!(Path.expand("assets/tailwind.config.js"), """
-    // See the Tailwind configuration guide for advanced usage
-    // https://tailwindcss.com/docs/configuration
-    module.exports = {
-      content: [
-        './js/**/*.js',
-        '../lib/*_web.ex',
-        '../lib/*_web/**/*.*ex'
-      ],
-      theme: {
-        extend: {},
-      },
-      plugins: [
-        require('@tailwindcss/forms')
-      ]
-    }
-    """)
+    unless File.exists?(tailwind_config_path) do
+      File.write!(tailwind_config_path, """
+      // See the Tailwind configuration guide for advanced usage
+      // https://tailwindcss.com/docs/configuration
+      module.exports = {
+        content: [
+          './js/**/*.js',
+          '../lib/*_web.ex',
+          '../lib/*_web/**/*.*ex'
+        ],
+        theme: {
+          extend: {},
+        },
+        plugins: [
+          require('@tailwindcss/forms')
+        ]
+      }
+      """)
+    end
   end
 
   # Available targets:
